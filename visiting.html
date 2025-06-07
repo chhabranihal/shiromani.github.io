@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Visiting Cards | Shiromani Offset</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+    body {
+      margin: 0;
+      background: #000;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+      text-align: center;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    .sun-loop {
+      position: fixed;
+      top: -200px;
+      left: -200px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, #ffcc00, #ff6600, transparent);
+      border-radius: 50%;
+      z-index: 0;
+      animation: rotateSun 25s linear infinite;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    @keyframes rotateSun {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      background: #111;
+      padding: 15px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .nav-button {
+      border: 1px solid #444;
+      padding: 10px 18px;
+      border-radius: 25px;
+      background: transparent;
+      color: white;
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .nav-button:hover {
+      background: #333;
+      box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+      color: #00ffff;
+    }
+
+    h1 {
+      margin-top: 40px;
+      font-weight: 700;
+      font-size: 2.4rem;
+      text-shadow: 0 0 10px #00ffff;
+      user-select: none;
+      position: relative;
+      z-index: 2;
+    }
+
+    .card-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+      padding: 40px 20px;
+      max-width: 1000px;
+      margin: 40px auto 60px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .card-box {
+      background: #111;
+      border-radius: 15px;
+      padding: 15px;
+      box-shadow: 0 6px 18px rgba(0, 255, 255, 0.3);
+      transition: 0.3s ease;
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .card-box:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 25px rgba(255, 0, 255, 0.6);
+    }
+
+    .card-box img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .card-box h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+      text-shadow: 0 0 5px #00ffff;
+    }
+
+    /* MODAL */
+
+    .card-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.85);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+      perspective: 1000px;
+      user-select: none;
+    }
+
+    .card-modal.show {
+      display: flex;
+    }
+
+    .card-modal-content {
+      background: #222;
+      padding: 30px 25px 40px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 420px;
+      transform: rotateY(20deg) scale(0.9);
+      animation: show3D 0.5s forwards;
+      box-shadow: 0 10px 25px rgba(0, 255, 255, 0.4);
+      color: white;
+      text-align: center;
+      position: relative;
+    }
+
+    @keyframes show3D {
+      from {
+        opacity: 0;
+        transform: rotateY(60deg) scale(0.5);
+      }
+      to {
+        opacity: 1;
+        transform: rotateY(0deg) scale(1);
+      }
+    }
+
+    .card-modal-close {
+      position: absolute;
+      top: 15px;
+      right: 25px;
+      font-size: 32px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #fff;
+      user-select: none;
+      transition: color 0.3s ease;
+    }
+
+    .card-modal-close:hover {
+      color: #ff00ff;
+    }
+
+    .shiny-button {
+      background: linear-gradient(135deg, #ff00cc, #3333ff);
+      padding: 12px 28px;
+      font-size: 1.1em;
+      color: white;
+      text-decoration: none;
+      border-radius: 40px;
+      display: inline-block;
+      margin-top: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      user-select: none;
+    }
+
+    .shiny-button:hover {
+      background: #00ffcc;
+      color: #000;
+      box-shadow: 0 0 10px #00ffcc, 0 0 25px #00ffcc;
+    }
+
+    .delete-button {
+      margin-top: 15px;
+      background: red;
+      padding: 10px 20px;
+      border-radius: 20px;
+      color: white;
+      border: none;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s ease;
+      margin-left: 10px;
+    }
+
+    .delete-button:hover {
+      background: #cc0000;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sun-loop"></div>
+
+  <div class="navbar">
+    <a class="nav-button" href="#">flxe</a> 
+    <a class="nav-button" href="#">3d letter</a>
+    <a class="nav-button" href="#">Wedding card</a>
+  </div>
+
+  <h1>🪪 Choose Your Visiting Card</h1>
+
+  <div class="card-container">
+    <div class="card-box" onclick="openCardModal('Matte Visiting Card', 'MX.jpeg')">
+      <img src="MX.jpeg" alt="Matte Visiting Card" />
+      <h3>Matte Visiting Card</h3>
+    </div>
+    <div class="card-box" onclick="openCardModal('UV Coated Visiting Card', 'Custom-Printed-Spot-UV-Business-Cards-1_09044527202408.jpg')">
+      <img src="Custom-Printed-Spot-UV-Business-Cards-1_09044527202408.jpg" alt="UV Coated Visiting Card" />
+      <h3>UV Coated Visiting Card</h3>
+    </div>
+    <div class="card-box" onclick="openCardModal('Business Visiting Card', 'matte-001.jpg')">
+      <img src="matte-001.jpg" alt="Business Visiting Card" />
+      <h3>Business Visiting Card</h3>
+    </div>
+    <div class="card-box" onclick="openCardModal('Premium Visiting Card', 'MX.jpeg')">
+      <img src="MX.jpeg" alt="Premium Visiting Card" />
+      <h3>Premium Visiting Card</h3>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="card-modal" id="cardModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+    <div class="card-modal-content">
+      <span class="card-modal-close" onclick="closeCardModal()" aria-label="Close modal">&times;</span>
+      <h2 id="modalTitle">Visiting Card</h2>
+      <img id="modalImage" src="" alt="" style="width: 100%; border-radius: 12px; margin-top: 15px;" />
+      <p id="modalDesc" style="margin-top: 15px; font-size: 1rem; line-height: 1.5;">
+        High-quality printing with excellent finish. Perfect for your professional needs.
+      </p><a
+  href="https://wa.me/919413047965?text=Hello,%20I%20would%20like%20to%20order%20the%20Matte%20Visiting%20Card."
+  target="_blank"
+  class="shiny-button"
+  rel="noopener noreferrer"
+>
+  Order Now
+</a>
+<button class="delete-button" onclick="closeCardModal()">Cancel</button>
+
+    </div>
+  </div>
+
+  <script>
+    function openCardModal(title, imgSrc) {
+      const modal = document.getElementById('cardModal');
+      document.getElementById('modalTitle').textContent = title;
+      const modalImage = document.getElementById('modalImage');
+      modalImage.src = imgSrc;
+      modalImage.alt = title;
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden'; // Prevent background scroll
+    }
+
+    function closeCardModal() {
+      const modal = document.getElementById('cardModal');
+      modal.classList.remove('show');
+      document.body.style.overflow = 'auto';
+    }
+
+    function orderCard() {
+      const title = document.getElementById('modalTitle').textContent;
+      alert(`Order placed for: ${title}`);
+      closeCardModal();
+    }
+
+    // Close modal if clicked outside content
+    document.getElementById('cardModal').addEventListener('click', (e) => {
+      if (e.target.id === 'cardModal') {
+        closeCardModal();
+      }
+    });
+
+    // Close modal on Escape key press
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeCardModal();
+      }
+    });
+  </script>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>3D Premium Visiting Card with Details</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #000000, #111111);
+      font-family: 'Poppins', sans-serif;
+      color: white;
+      overflow-x: hidden;
+      text-align: center;
+      padding-top: 40px;
+    }
+
+    .scene {
+      width: 320px;
+      height: 200px;
+      perspective: 1000px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    .card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: rotate 12s infinite linear;
+      border-radius: 15px;
+    }
+
+    .card-side {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(255, 0, 255, 0.4);
+      padding: 20px 25px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      color: white;
+      user-select: none;
+    }
+
+    .front {
+      background: linear-gradient(135deg, #ff00cc, #3333ff);
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .back {
+      background: linear-gradient(135deg, #3333ff, #00ffcc);
+      transform: rotateY(180deg);
+      font-weight: 500;
+      font-size: 0.9em;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotateY(0deg); }
+      100% { transform: rotateY(360deg); }
+    }
+
+    .front .name {
+      font-size: 1.6em;
+      margin-bottom: 5px;
+      text-shadow: 0 0 6px #fff;
+    }
+
+    .front .title {
+      font-size: 1.1em;
+      margin-bottom: 20px;
+      opacity: 0.85;
+    }
+
+    .front .logo {
+      margin-top: auto;
+      align-self: flex-start;
+      font-size: 0.9em;
+      opacity: 0.7;
+      letter-spacing: 0.1em;
+    }
+
+    .front-button {
+      margin: 15px auto 0 auto;
+      display: block;
+      padding: 10px 20px;
+      background: #ff00cc;
+      border: none;
+      border-radius: 25px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 0 10px #ff00cc;
+      transition: background-color 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .front-button:hover {
+      background: #e600b8;
+    }
+
+    .back .heading {
+      font-size: 1.3em;
+      margin-bottom: 10px;
+      text-decoration: underline;
+      color: #fff;
+    }
+
+    .back .details {
+      line-height: 1.4em;
+    }
+
+    .back .details span {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .glow {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(255,0,255,0.2), transparent);
+      border-radius: 50%;
+      z-index: 1;
+      animation: pulse 4s infinite ease-in-out;
+    }
+
+    .glow.left {
+      top: -150px;
+      left: -150px;
+    }
+
+    .glow.right {
+      bottom: -150px;
+      right: -150px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.2; }
+      50% { transform: scale(1.2); opacity: 0.4; }
+    }
+
+    /* Bottom button styles */
+    .bottom-buttons {
+      margin-top: 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .bottom-buttons a {
+      padding: 14px 28px;
+      background: #ff00cc;
+      color: white;
+      font-weight: 600;
+      border-radius: 30px;
+      text-decoration: none;
+      box-shadow: 0 0 12px #ff00cc;
+      transition: background-color 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+      width: 300px;
+    }
+
+    .bottom-buttons a:hover {
+      background-color: #e600b8;
+    }
+  </style>
+</head>
+<body>
+  <!-- Glow Effects -->
+  <div class="glow left"></div>
+  <div class="glow right"></div>
+
+  <!-- 3D Card -->
+  <div class="scene">
+    <div class="card">
+      <!-- Front Side -->
+      <div class="card-side front">
+        <div class="name">Shiromani Offset</div>
+        <div class="title">Creative Visiting Cards</div>
+        <button class="front-button">Order Now</button>
+        <div class="logo">🔥 Premium Print</div>
+      </div>
+
+      <!-- Back Side -->
+      <div class="card-side back">
+        <div class="heading">Contact Details</div>
+        <div class="details">
+          <span>📞 +91 94130 47965</span>
+          <span>✉️ shiromanioffsetnbh@gmail.com</span>
+          <span>🌐 www.shiromanioffset.com</span>
+          <span>📍 123 Main Street, Rajasthan, India</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Buttons -->
+  <div class="bottom-buttons">
+    <a href="mailto:shiromanioffsetnbh@gmail.com?subject=Visiting Card Inquiry">📩 Email: shiromanioffsetnbh@gmail.com</a>
+    <a href="tel:+919413047965">📞 Call: +91 94130 47965</a>
+  </div>
+</body>
+</html>
+
+</body>
+</html>

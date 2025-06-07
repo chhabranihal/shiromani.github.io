@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Space Flex Printing</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: 'Arial', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Moon with green shine */
+    .animated-moon {
+      width: 20rem;
+      height: 20rem;
+      position: absolute;
+      top: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background-image: url('https://www.solarsystemscope.com/textures/download/2k_moon.jpg');
+      background-size: 110% 100%;
+      box-shadow:
+        inset -10px 8px 6px -5px #ffffff,
+        inset 20px -20px 50px 43px rgba(0, 0, 0, 0.9),
+        7px -6px 14px rgba(255, 255, 255, 0.32),
+        0 0 60px rgba(100, 255, 100, 0.6); /* Green shine */
+      animation: moonRotation 15s linear infinite;
+      z-index: 2;
+    }
+
+    @keyframes moonRotation {
+      0% { background-position: 0% 0%; filter: brightness(1) hue-rotate(0deg); }
+      50% { background-position: 150% 0%; filter: brightness(1.3) hue-rotate(30deg); }
+      100% { background-position: 300% 0%; filter: brightness(1) hue-rotate(0deg); }
+    }
+
+    /* Space background with stars */
+    .space-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    .star {
+      position: absolute;
+      background: #fff;
+      border-radius: 50%;
+      animation: twinkle var(--duration) infinite ease-in-out;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    /* Flex Machines - Left and Right */
+    .flex-machine {
+      position: absolute;
+      width: 300px;
+      height: 400px;
+      bottom: 100px;
+      z-index: 3;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center bottom;
+      filter: drop-shadow(0 0 15px rgba(100, 255, 100, 0.7));
+    }
+
+    .machine-left {
+      left: 50px;
+      background-image: url('https://i.ibb.co/0jQ2YHt/flex-machine.png');
+      animation: machineFloat 4s infinite ease-in-out;
+    }
+
+    .machine-right {
+      right: 50px;
+      background-image: url('https://i.ibb.co/0jQ2YHt/flex-machine.png');
+      animation: machineFloat 4s 1s infinite ease-in-out;
+    }
+
+    @keyframes machineFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    /* Printing animation */
+    .printing-animation {
+      position: absolute;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 100px;
+      background: linear-gradient(to bottom, transparent, rgba(100, 255, 100, 0.3));
+      z-index: 2;
+      animation: printPulse 2s infinite;
+    }
+
+    @keyframes printPulse {
+      0%, 100% { height: 100px; opacity: 0.7; }
+      50% { height: 150px; opacity: 1; }
+    }
+
+    /* Color Paint Dripping Effect */
+    .paint-drip {
+      position: absolute;
+      top: 0;
+      width: 200px;
+      height: 300px;
+      background: linear-gradient(to bottom, var(--paint-color), transparent);
+      clip-path: polygon(0 0, 100% 0, 80% 100%, 20% 100%);
+      filter: blur(10px);
+      opacity: 0.7;
+      z-index: 1;
+      animation: paintDrip 8s infinite, colorChange 16s infinite;
+    }
+
+    .drip-left {
+      left: 0;
+      --paint-color: #ff3366;
+      animation-delay: 0s, 0s;
+    }
+
+    .drip-right {
+      right: 0;
+      --paint-color: #3366ff;
+      animation-delay: 2s, 4s;
+    }
+
+    @keyframes paintDrip {
+      0% { transform: translateY(-100%); opacity: 0; }
+      20% { transform: translateY(0); opacity: 0.7; }
+      80% { opacity: 0.7; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+
+    @keyframes colorChange {
+      0%, 100% { --paint-color: #ff3366; }
+      25% { --paint-color: #33ff66; }
+      50% { --paint-color: #3366ff; }
+      75% { --paint-color: #ff33cc; }
+    }
+
+    /* Paint splashes at bottom */
+    .paint-splash {
+      position: absolute;
+      bottom: 0;
+      width: 300px;
+      height: 150px;
+      background: radial-gradient(ellipse at center, var(--splash-color), transparent 70%);
+      filter: blur(20px);
+      opacity: 0;
+      z-index: 1;
+      animation: splashAppear 8s infinite;
+    }
+
+    .splash-left {
+      left: 0;
+      --splash-color: rgba(255, 51, 102, 0.5);
+      animation-delay: 1s;
+    }
+
+    .splash-right {
+      right: 0;
+      --splash-color: rgba(51, 102, 255, 0.5);
+      animation-delay: 3s;
+    }
+
+    @keyframes splashAppear {
+      0%, 30%, 100% { opacity: 0; transform: scale(0.5); }
+      10%, 20% { opacity: 0.5; transform: scale(1); }
+    }
+
+    /* Material Boxes Container */
+    .flex-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 400px;
+      padding: 20px;
+      gap: 30px;
+      z-index: 4;
+      position: relative;
+    }
+
+    .flex-box {
+      width: 250px;
+      height: 300px;
+      background: rgba(20, 20, 30, 0.8);
+      border-radius: 15px;
+      border: 1px solid rgba(100, 255, 100, 0.5);
+      box-shadow: 0 0 15px rgba(100, 255, 100, 0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.3s;
+      overflow: hidden;
+      position: relative;
+      padding: 15px;
+    }
+
+    .flex-box:hover {
+      transform: translateY(-10px) scale(1.05);
+      box-shadow: 0 10px 30px rgba(100, 255, 100, 0.6);
+      border-color: rgba(100, 255, 100, 0.9);
+    }
+
+    .flex-box img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .flex-box h3 {
+      font-size: 1.3rem;
+      color: #fff;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .flex-box p {
+      font-size: 0.9rem;
+      color: #ccc;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .price {
+      font-size: 1.2rem;
+      color: #64ff64;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .order-btn {
+      background: linear-gradient(to right, #00c853, #64dd17);
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+      width: 80%;
+      text-align: center;
+    }
+
+    .order-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(100, 255, 100, 0.7);
+    }
+
+    /* Material details modal */
+    .material-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .modal-content {
+      background: rgba(30, 30, 40, 0.95);
+      border-radius: 15px;
+      width: 80%;
+      max-width: 600px;
+      padding: 30px;
+      border: 1px solid rgba(100, 255, 100, 0.5);
+      box-shadow: 0 0 30px rgba(100, 255, 100, 0.5);
+      transform: translateY(20px);
+      transition: transform 0.3s;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      color: #64ff64;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .material-modal.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .material-modal.active .modal-content {
+      transform: translateY(0);
+    }
+
+    /* Navigation link back to homepage */
+    .home-link {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      color: #64ff64;
+      font-size: 1.2rem;
+      text-decoration: none;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .home-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Link back to homepage -->
+  <a href="index.html" class="home-link">
+    <i class="fas fa-arrow-left"></i> Back to Home
+  </a>
+
+  <!-- Moon with green shine -->
+  <div class="animated-moon"></div>
+
+  <!-- Space background with stars -->
+  <div class="space-bg" id="spaceBg"></div>
+
+  <!-- Paint Dripping Effects -->
+  <div class="paint-drip drip-left"></div>
+  <div class="paint-drip drip-right"></div>
+  
+  <!-- Paint Splashes at Bottom -->
+  <div class="paint-splash splash-left"></div>
+  <div class="paint-splash splash-right"></div>
+
+  <!-- Flex Machines -->
+  <div class="flex-machine machine-left"></div>
+  <div class="flex-machine machine-right"></div>
+
+  <!-- Printing animation -->
+  <div class="printing-animation"></div>
+
+  <!-- Flex Materials Container -->
+  <div class="flex-container">
+    <!-- Star Material -->
+    <div class="flex-box" onclick="showMaterial('star')">
+      <img src="https://i.ibb.co/4W2yXvP/star-material.jpg" alt="Star Material"/>
+      <h3>Star Flex</h3>
+      <p>Premium quality with star pattern</p>
+      <div class="price">₹120/sq.ft</div>
+      <button class="order-btn">Order Now</button>
+    </div>
+
+    <!-- Regular Flex -->
+    <div class="flex-box" onclick="showMaterial('regular')">
+      <img src="https://i.ibb.co/0nQ3YF5/regular-flex.jpg" alt="Regular Flex"/>
+      <h3>Regular Flex</h3>
+      <p>Standard quality for all purposes</p>
+      <div class="price">₹80/sq.ft</div>
+      <button class="order-btn">Order Now</button>
+    </div>
+
+    <!-- Retro Flex -->
+    <div class="flex-box" onclick="showMaterial('retro')">
+      <img src="https://i.ibb.co/8X1bJ0k/retro-flex.jpg" alt="Retro Flex"/>
+      <h3>Retro Flex</h3>
+      <p>Vintage look with modern durability</p>
+      <div class="price">₹150/sq.ft</div>
+      <button class="order-btn">Order Now</button>
+    </div>
+
+    <!-- Vinyl Material -->
+    <div class="flex-box" onclick="showMaterial('vinyl')">
+      <img src="https://i.ibb.co/6nZxLh0/vinyl-material.jpg" alt="Vinyl Material"/>
+      <h3>Premium Vinyl</h3>
+      <p>High-end vinyl for premium applications</p>
+      <div class="price">₹200/sq.ft</div>
+      <button class="order-btn">Order Now</button>
+    </div>
+  </div>
+
+  <!-- Material Details Modal -->
+  <div class="material-modal" id="materialModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <h2 id="modalTitle">Material Details</h2>
+      <div class="modal-body" id="modalBody">
+        <!-- Content will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Create stars for background
+    const spaceBg = document.getElementById('spaceBg');
+    for (let i = 0; i < 100; i++) {
+      const star = document.createElement('div');
+      star.classList.add('star');
+      star.style.left = `${Math.random() * 100}%`;
+      star.style.top = `${Math.random() * 100}%`;
+      star.style.width = `${Math.random() * 3 + 1}px`;
+      star.style.height = star.style.width;
+      star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+      spaceBg.appendChild(star);
+    }
+
+    // Material data
+    const materials = {
+      star: {
+        title: "Star Flex Material",
+        description: "Premium quality flex material with special star pattern that shines under light. Perfect for high-end displays and premium branding.",
+        features: [
+          "UV resistant for outdoor use",
+          "3-5 years durability",
+          "Special reflective coating",
+          "Waterproof and weatherproof"
+        ],
+        price: "₹120/sq.ft",
+        minOrder: "10 sq.ft"
+      },
+      regular: {
+        title: "Regular Flex Material",
+        description: "Our standard flex material suitable for all types of printing needs. Good balance between quality and affordability.",
+        features: [
+          "1-2 years outdoor durability",
+          "Smooth printing surface",
+          "Economical pricing",
+          "Quick turnaround time"
+        ],
+        price: "₹80/sq.ft",
+        minOrder: "5 sq.ft"
+      },
+      retro: {
+        title: "Retro Flex Material",
+        description: "Special material that gives a vintage, retro look to your designs while maintaining modern durability standards.",
+        features: [
+          "Unique matte finish",
+          "Special texture effect",
+          "2-3 years durability",
+          "Perfect for themed events"
+        ],
+        price: "₹150/sq.ft",
+        minOrder: "8 sq.ft"
+      },
+      vinyl: {
+        title: "Premium Vinyl Material",
+        description: "High-end vinyl material for premium applications where quality and longevity are paramount.",
+        features: [
+          "5+ years outdoor durability",
+          "Scratch resistant surface",
+          "High color vibrancy",
+          "Professional grade material"
+        ],
+        price: "₹200/sq.ft",
+        minOrder: "5 sq.ft"
+      }
+    };
+
+    // Show material details
+    function showMaterial(type) {
+      const material = materials[type];
+      const modal = document.getElementById('materialModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalBody = document.getElementById('modalBody');
+      
+      modalTitle.textContent = material.title;
+      
+      let featuresHtml = '<ul>';
+      material.features.forEach(feature => {
+        featuresHtml += `<li>${feature}</li>`;
+      });
+      featuresHtml += '</ul>';
+      
+      modalBody.innerHTML = `
+        <p>${material.description}</p>
+        ${featuresHtml}
+        <div style="margin-top: 20px;">
+          <p><strong>Price:</strong> ${material.price}</p>
+          <p><strong>Minimum Order:</strong> ${material.minOrder}</p>
+        </div>
+        <button class="order-btn" style="margin-top: 20px; width: 100%;" onclick="openWhatsApp('${material.title}')">
+          <i class="fab fa-whatsapp"></i> Order on WhatsApp
+        </button>
+      `;
+      
+      modal.classList.add('active');
+    }
+
+    // Close modal
+    function closeModal() {
+      document.getElementById('materialModal').classList.remove('active');
+    }
+
+    // Open WhatsApp
+    function openWhatsApp(materialName) {
+      const phone = "9413047965";
+      const message = `Hi, I want to order ${materialName}. Please provide more details.`;
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+    }
+
+    // Attach order buttons
+    document.querySelectorAll('.order-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const materialName = this.parentElement.querySelector('h3').textContent;
+        openWhatsApp(materialName);
+      });
+    });
+
+    // Create additional paint drips dynamically
+    function createPaintDrips() {
+      const colors = ['#ff3366', '#33ff66', '#3366ff', '#ff33cc', '#ffcc33'];
+      const container = document.body;
+      
+      for (let i = 0; i < 4; i++) {
+        const drip = document.createElement('div');
+        drip.className = `paint-drip ${i % 2 === 0 ? 'drip-left' : 'drip-right'}`;
+        drip.style.setProperty('--paint-color', colors[i % colors.length]);
+        drip.style.animationDelay = `${i * 2}s, ${i * 4}s`;
+        container.appendChild(drip);
+      }
+    }
+
+    createPaintDrips();
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flex Machine Animation</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #000;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-end;
+    }
+
+    .flex-machine {
+      width: 300px;
+      height: 400px;
+      margin-right: 50px;
+      margin-bottom: 100px;
+      background-image: url('Iris-pro - Copy.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center bottom;
+      position: relative;
+      animation: 
+        machineFloat 4s infinite ease-in-out,
+        machineGlow 3s infinite alternate;
+      filter: drop-shadow(0 0 10px rgba(100, 255, 100, 0.5));
+    }
+
+    @keyframes machineFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    @keyframes machineGlow {
+      0% { filter: drop-shadow(0 0 10px rgba(100, 255, 100, 0.5)); }
+      100% { filter: drop-shadow(0 0 25px rgba(100, 255, 100, 0.9)); }
+    }
+
+    .printing-paper {
+      position: absolute;
+      width: 200px;
+      height: 30px;
+      background: linear-gradient(to right, 
+        rgba(255,255,255,0.8) 0%, 
+        rgba(255,255,255,1) 50%, 
+        rgba(255,255,255,0.8) 100%);
+      right: 50px;
+      bottom: 0;
+      border-radius: 2px;
+      animation: paperPrint 3s infinite linear;
+      transform-origin: right center;
+    }
+
+    @keyframes paperPrint {
+      0% { transform: scaleX(0); opacity: 0; }
+      10% { transform: scaleX(0.1); opacity: 0.8; }
+      50% { transform: scaleX(0.5); opacity: 1; }
+      90% { transform: scaleX(0.9); opacity: 0.8; }
+      100% { transform: scaleX(1); opacity: 0; }
+    }
+
+    .machine-base-light {
+      position: absolute;
+      width: 120px;
+      height: 10px;
+      background: rgba(100, 255, 100, 0.7);
+      bottom: 0;
+      right: 90px;
+      border-radius: 50%;
+      filter: blur(5px);
+      animation: lightPulse 2s infinite alternate;
+    }
+
+    @keyframes lightPulse {
+      0% { opacity: 0.3; transform: scale(0.9); }
+      100% { opacity: 0.7; transform: scale(1.1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="flex-machine">
+    <div class="machine-base-light"></div>
+    <div class="printing-paper"></div>
+  </div>
+</body>
+</html>
